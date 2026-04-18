@@ -63,12 +63,12 @@ async def handler(websocket):
             if not (0 <= r < len(game_state["board"]) and 0 <= c < len(game_state["board"])):
                 continue
 
-            # 🚫 já jogou na rodada
+            # Já jogou na rodada
             if player_id in game_state["players_played"]:
                 print(f"{player_id} já jogou nesta rodada")
                 continue
 
-            # 💥 game over → reinicia
+            # Game over → reinicia
             if game_state["game_over"]:
                 init_game()
                 await broadcast_state()
@@ -83,7 +83,7 @@ async def handler(websocket):
             else:
                 game_state["revealed"][r][c] = True
 
-            # 🔁 se todos jogaram → nova rodada
+            #Nova rodada
             if game_state["players_played"] == game_state["players"]:
                 print("Nova rodada!")
                 game_state["players_played"] = set()
