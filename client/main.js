@@ -3,13 +3,15 @@ const status = document.getElementById("status");
 const restartBtn = document.getElementById("restart");
 const explosion = document.getElementById("explosion");
 
-let myId = null; // 
-let gameState = null; // Estado do jogo recebido do servidor
-let exploded = false; // Flag para evitar múltiplas explosões
+let myId = null;
+let gameState = null;
+let exploded = false;
 
+// Áudio
 const bombSound = new Audio("bomb.mp3");
+bombSound.volume = 0.7;
 
-//Explosão
+// Explosão visual
 function explodeEffect() {
     explosion.classList.remove("hidden");
     document.body.classList.add("shake");
@@ -20,29 +22,36 @@ function explodeEffect() {
     }, 400);
 }
 
-//Websocket
+// WebSocket (FUNCIONA LOCAL + NGROK)
 const ws = new WebSocket(
-    location.protocol === "https:"
-        ? "wss://" + location.host + "/ws"
-        : "ws://" + location.host + "/ws"
+    (location.protocol === "https:" ? "wss://" : "ws://") +
+    location.host +
+    "/ws"
 );
 
-//Recebe dados
+// Recebe dados (com proteção contra erro)
 ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
+    try {
+        const data = JSON.parse(event.data);
 
-    if (data.player_id) {
-        myId = data.player_id;
-        gameState = data.state;
-    } else {
-        gameState = data;
+        if (data.player_id && data.state) {
+            myId = data.player_id;
+            gameState = data.state;
+        } else {
+            gameState = data;
+        }
+
+        if (!gameState) return;
+
+        updateStatus();
+        render(gameState);
+
+    } catch (e) {
+        console.error("Erro no onmessage:", e);
     }
-
-    updateStatus();
-    render(gameState);
 };
 
-//Status
+// Status
 function updateStatus() {
     if (!gameState || !myId) return;
 
@@ -66,8 +75,10 @@ function updateStatus() {
     }
 }
 
-//Render
+// Render (com proteção)
 function render(state) {
+    if (!state || !state.board || !state.revealed) return;
+
     board.innerHTML = "";
 
     state.board.forEach((row, r) => {
@@ -99,12 +110,12 @@ function render(state) {
                 if (gameState.current_player !== myId) return;
                 if (state.revealed[r][c]) return;
 
+                // SOM NO CLIQUE DA BOMBA
                 if (state.board[r][c] === 1 && !exploded) {
                     exploded = true;
 
-                    // 🔊 FORÇA TOCAR O SOM
                     bombSound.currentTime = 0;
-                    bombSound.play().catch(e => console.log("Erro no áudio:", e));
+                    bombSound.play();
 
                     explodeEffect();
                 }
@@ -117,7 +128,7 @@ function render(state) {
     });
 }
 
-//Restart
+// Restart
 restartBtn.onclick = () => {
     exploded = false;
     ws.send(JSON.stringify({ action: "restart" }));
