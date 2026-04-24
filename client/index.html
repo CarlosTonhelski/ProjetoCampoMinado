@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<title>Campo Minado Multiplayer</title>
+
+<style>
+@keyframes shake {
+    0% { transform: translate(0px, 0px); }
+    25% { transform: translate(6px, -6px); }
+    50% { transform: translate(-6px, 6px); }
+    75% { transform: translate(6px, 6px); }
+    100% { transform: translate(0px, 0px); }
+}
+
+.shake {
+    animation: shake 0.3s;
+}
+</style>
+
+</head>
+
+<body class="bg-gradient-to-br from-slate-900 to-slate-800 text-white flex items-center justify-center min-h-screen">
+
+<div class="bg-slate-800 p-8 rounded-2xl shadow-2xl text-center w-[320px]">
+
+    <h1 class="text-2xl font-bold mb-2">💣 Campo Minado - Coca Cola 💣</h1>
+
+    <div id="status" class="mb-4 text-sm text-gray-300"></div>
+
+    <div id="board" class="grid grid-cols-5 gap-2 justify-center"></div>
+
+    <button id="restart"
+        class="mt-5 w-full py-3 rounded-xl bg-green-500 hover:bg-green-600 transition font-semibold shadow-lg hidden">
+        🔁 Jogar novamente
+    </button>
+
+</div>
+
+<!-- explosão -->
+<div id="explosion" class="hidden fixed inset-0 flex items-center justify-center pointer-events-none z-50">
+    <div class="text-[120px] animate-ping">💥</div>
+</div>
+
+<script src="main.js"></script>
+
+</body>
+</html>
