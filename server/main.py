@@ -5,7 +5,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 
-from server.game_manager import game_state, init_game
+from game_manager import game_state, init_game
 
 clients = {} # Dicionário para armazenar os clientes conectados {player_id: WebSocketHandler} e o estado do jogo compartilhado
 
@@ -132,7 +132,7 @@ def make_app():
     return tornado.web.Application([
         (r"/ws", GameWebSocket),
         (r"/(.*)", tornado.web.StaticFileHandler, {
-            "path": os.path.join(BASE_DIR, "client"),
+            "path": os.path.join(BASE_DIR, "..", "client"),
             "default_filename": "index.html"
         }),
     ])
