@@ -3,9 +3,10 @@ const status = document.getElementById("status");
 const restartBtn = document.getElementById("restart");
 const explosion = document.getElementById("explosion");
 
-let myId = null;
-let gameState = null;
-let exploded = false;
+// Variáveis de controle do jogo no cliente
+let myId = null; // ID do jogador atual
+let gameState = null; // Estado do jogo vindo do servidor
+let exploded = false; // Evita tocar som múltiplas vezes
 
 // Áudio
 const bombSound = new Audio("bomb.mp3");
@@ -51,13 +52,14 @@ ws.onmessage = (event) => {
     }
 };
 
-// Status
+// Atualiza o texto de status do jogo (turno / vitória)
 function updateStatus() {
     if (!gameState || !myId) return;
 
     if (gameState.game_over) {
         restartBtn.classList.remove("hidden");
 
+        // Compara IDs para saber se venceu ou perdeu
         if (gameState.winner === myId) {
             status.innerText = "Você venceu!";
         } else {
@@ -75,7 +77,7 @@ function updateStatus() {
     }
 }
 
-// Render (com proteção)
+// Renderiza o tabuleiro na tela
 function render(state) {
     if (!state || !state.board || !state.revealed) return;
 
@@ -100,6 +102,7 @@ function render(state) {
                 btn.classList.add("bg-slate-700", "hover:bg-slate-600");
             }
 
+             // Bloqueia clique se já clicado ou fim de jogo
             if (state.game_over || state.revealed[r][c]) {
                 btn.disabled = true;
                 btn.classList.add("cursor-not-allowed", "opacity-80");
@@ -110,7 +113,7 @@ function render(state) {
                 if (gameState.current_player !== myId) return;
                 if (state.revealed[r][c]) return;
 
-                // SOM NO CLIQUE DA BOMBA
+                 // Se clicou na bomba → toca som e animação
                 if (state.board[r][c] === 1 && !exploded) {
                     exploded = true;
 
